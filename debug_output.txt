@@ -1,0 +1,3 @@
+🚀 Main started
+📂 Bundle path: /Applications/MacTranslator.app
+🚀 AppDelegate: applicationDidFinishLaunching called

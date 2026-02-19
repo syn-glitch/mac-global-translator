@@ -8,6 +8,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var toggleMenuItem: NSMenuItem!
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        print("🚀 AppDelegate: applicationDidFinishLaunching called")
         // Force activation (bring to front/focus menu bar)
         NSApp.activate(ignoringOtherApps: true)
 
@@ -71,13 +72,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         if let button = statusItem.button {
-            // Use system icon if available (macOS 11+)
-            if let image = NSImage(systemSymbolName: "globe", accessibilityDescription: "Mac Translator") {
+            // Use AppIcon (Judy) if available
+            // Try loading from Assets or Info.plist icon name
+            var icon = NSImage(named: "AppIcon")
+            
+            // Fallback to application icon (which might be the generic one if custom not set, but worth a try)
+            if icon == nil {
+                print("⚠️ AppIcon not found, trying NSApplication.shared.applicationIconImage")
+                icon = NSApplication.shared.applicationIconImage
+            }
+            
+            if let appIcon = icon {
+                print("✅ Using AppIcon for status bar")
+                appIcon.size = NSSize(width: 18, height: 18)
+                button.image = appIcon
+            } else if let image = NSImage(systemSymbolName: "globe", accessibilityDescription: "Mac Translator") {
+                print("✅ Using System Symbol 'globe' for status bar")
                 button.image = image
             } else {
+                print("⚠️ Using text fallback for status bar")
                 button.title = "🌐"
             }
             button.toolTip = "Mac Translator"
+        } else {
+            print("❌ Failed to get statusItem.button")
         }
 
         let menu = NSMenu()

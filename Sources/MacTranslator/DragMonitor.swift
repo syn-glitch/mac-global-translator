@@ -18,18 +18,28 @@ class DragMonitor {
         guard !isRunning else { return }
         isRunning = true
 
+        print("🔵 Attempting to start DragMonitor...")
+
         // Monitor global mouse events (outside our app)
         globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .leftMouseUp]) { [weak self] event in
+            // print("🖱 Global mouse event: \(event.type)")
             self?.handleMouseEvent(event)
         }
 
         // Also monitor local events (inside our app, if any window)
         localMonitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .leftMouseUp]) { [weak self] event in
+            // print("🖱 Local mouse event: \(event.type)")
             self?.handleMouseEvent(event)
             return event
         }
 
-        print("👂 Mouse drag monitor started")
+        if globalMonitor != nil {
+            print("✅ Global monitor registered")
+        } else {
+            print("❌ Failed to register global monitor (Check Accessibility Permissions)")
+        }
+
+        print("👂 DragMonitor started")
     }
 
     func stop() {
@@ -42,18 +52,20 @@ class DragMonitor {
             localMonitor = nil
         }
         isRunning = false
-        print("⏹ Mouse drag monitor stopped")
+        print("⏹ DragMonitor stopped")
     }
 
     private func handleMouseEvent(_ event: NSEvent) {
         switch event.type {
         case .leftMouseDown:
             mouseDownLocation = NSEvent.mouseLocation
+            // print("⬇️ Mouse Down at \(String(describing: mouseDownLocation))")
 
         case .leftMouseUp:
             guard let startLocation = mouseDownLocation else { return }
             let endLocation = NSEvent.mouseLocation
             mouseDownLocation = nil
+            // print("⬆️ Mouse Up at \(endLocation)")
 
             // Calculate drag distance
             let dx = endLocation.x - startLocation.x
@@ -64,6 +76,8 @@ class DragMonitor {
             if distance > 10 {
                 print("✨ Drag detected (distance: \(Int(distance)))")
                 handleDragEnd(at: endLocation)
+            } else {
+                // print("Pass: Click only (distance: \(Int(distance)))")
             }
 
         default:

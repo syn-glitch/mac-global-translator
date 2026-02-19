@@ -50,6 +50,12 @@ cp ".build/release/${APP_NAME}" "${APP_BUNDLE}/Contents/MacOS/${APP_NAME}"
 # Copy Info.plist
 cp "${SCRIPT_DIR}/Info.plist" "${APP_BUNDLE}/Contents/Info.plist"
 
+# Copy AppIcon
+if [ -f "${SCRIPT_DIR}/AppIcon.icns" ]; then
+    echo "🎨 Copying AppIcon..."
+    cp "${SCRIPT_DIR}/AppIcon.icns" "${APP_BUNDLE}/Contents/Resources/AppIcon.icns"
+fi
+
 echo ""
 echo "✅ Build successful!"
 echo ""

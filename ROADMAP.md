@@ -17,6 +17,14 @@ Mac Global Translator를 더욱 강력한 어학 학습 도구로 발전시키�
 - **특징**: 현존 최고 수준의 자연스러움, 다양한 캐릭터 목소리(예: 주디 홉스 스타일) 커스텀 가능.
 - **단점**: OpenAI보다 비용이 높음.
 
+
+### 🌟 Custom App Icon (✅ 구현 완료)
+- **특징**: '주디 홉스' 이미지를 활용한 3D 스타일의 앱 아이콘.
+- **구현 내용**:
+    - [x] 원본 이미지 처리 및 `icns` 변환 스크립트 (`generate_icon.swift`, `set_icon.sh`)
+    - [x] 앱 빌드 시 리소스 자동 포함 (`Info.plist`, `Copy Bundle Resources`)
+    - [x] 메뉴바 및 Dock 아이콘 적용 완료
+
 ---
 
 ## 2. 📚 나만의 단어장 (Vocabulary Builder)
