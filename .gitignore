@@ -1,0 +1,11 @@
+.DS_Store
+.build/
+.swiftpm/
+*.xcodeproj
+xcuserdata/
+
+# App Bundle (Build Artifact)
+MacTranslator.app/
+
+# Local configuration
+/*.log
