@@ -88,9 +88,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         menu.addItem(NSMenuItem.separator())
 
-        let apiKeyItem = NSMenuItem(title: "🔑 API Key 설정", action: #selector(showAPIKeyDialog), keyEquivalent: "k")
+        let apiKeyItem = NSMenuItem(title: "🔑 Claude API Key 설정", action: #selector(showAPIKeyDialog), keyEquivalent: "k")
         apiKeyItem.target = self
         menu.addItem(apiKeyItem)
+
+        let openAIKeyItem = NSMenuItem(title: "🔊 OpenAI API Key 설정", action: #selector(showOpenAIKeyDialog), keyEquivalent: "o")
+        openAIKeyItem.target = self
+        menu.addItem(openAIKeyItem)
 
         menu.addItem(NSMenuItem.separator())
 
@@ -122,6 +126,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func showAPIKeyDialog() {
         promptForAPIKey(isFirstLaunch: false)
+    }
+
+    @objc private func showOpenAIKeyDialog() {
+        promptForOpenAIKey()
     }
 
     @objc private func quitApp() {
@@ -159,11 +167,51 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if response == .alertFirstButtonReturn {
             let key = inputField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
             if !key.isEmpty {
+                // Save Claude API Key
                 if KeychainManager.saveAPIKey(key) {
-                    print("✅ API Key saved to Keychain")
-                    showNotification(title: "✅ API Key 저장 완료", message: "Claude AI 번역이 활성화되었습니다.")
+                    print("✅ Claude API Key saved")
+                    showNotification(title: "✅ Claude API Key 저장 완료", message: "Claude AI 번역이 활성화되었습니다.")
                 } else {
-                    print("❌ Failed to save API Key")
+                    print("❌ Failed to save Claude API Key")
+                    showNotification(title: "❌ 저장 실패", message: "API Key 저장에 실패했습니다.")
+                }
+            }
+        }
+    }
+
+    private func promptForOpenAIKey() {
+        // Force app to foreground
+        NSApp.activate(ignoringOtherApps: true)
+
+        let alert = NSAlert()
+        alert.messageText = "🔊 OpenAI API Key 설정"
+        alert.informativeText = "고품질 TTS를 사용하려면 OpenAI API Key를 입력해주세요.\nKey는 macOS Keychain에 안전하게 저장됩니다."
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "저장")
+        alert.addButton(withTitle: "취소")
+
+        let inputField = NSTextField(frame: NSRect(x: 0, y: 0, width: 340, height: 24))
+        inputField.placeholderString = "sk-proj-..."
+        inputField.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+
+        // Pre-fill existing key (masked)
+        if let existingKey = KeychainManager.getOpenAIKey() {
+            let masked = String(existingKey.prefix(12)) + "..." + String(existingKey.suffix(4))
+            inputField.placeholderString = masked
+        }
+
+        alert.accessoryView = inputField
+        alert.window.initialFirstResponder = inputField
+
+        let response = alert.runModal()
+
+        if response == .alertFirstButtonReturn {
+            let key = inputField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !key.isEmpty {
+                if KeychainManager.saveOpenAIKey(key) {
+                    print("✅ OpenAI API Key saved")
+                    showNotification(title: "✅ OpenAI API Key 저장 완료", message: "고품질 TTS 기능이 활성화되었습니다.")
+                } else {
                     showNotification(title: "❌ 저장 실패", message: "API Key 저장에 실패했습니다.")
                 }
             }

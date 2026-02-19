@@ -5,13 +5,13 @@ Mac Global Translator를 더욱 강력한 어학 학습 도구로 발전시키�
 ## 1. 🗣️ 고품질 원어민 음성 (High-Quality TTS)
 현재 Mac 기본 TTS(NSSpeechSynthesizer)의 기계적인 발음을 개선하기 위해, **AI 기반 음성 합성 엔진**을 도입합니다.
 
-### 🌟 OpenAI (ChatGPT) TTS
+### 🌟 OpenAI (ChatGPT) TTS (✅ 구현 완료)
 - **특징**: `alloy`, `echo`, `shimmer` 등 매우 자연스럽고 감정 표현이 가능한 목소리.
 - **장점**: 가격이 저렴하고(1,000자당 약 $0.015), 응답 속도가 빠름.
-- **구현 계획**:
-    - OpenAI API Key 입력란 추가 (`UserDefaults` / `Keychain` 저장)
-    - `TranslateService`와 별도로 `TTSService` 모듈 분리
-    - 팝업의 [🔊 듣기] 버튼 클릭 시 MP3 스트리밍 재생
+- **구현 내용**:
+    - [x] OpenAI API Key 입력 메뉴 (`Keychain` 저장)
+    - [x] `OpenAITTS` 서비스 모듈 구현
+    - [x] 팝업의 [🔊 듣기] 버튼 클릭 시 `audio/speech` API 호출 및 재생
 
 ### 🌟 ElevenLabs API
 - **특징**: 현존 최고 수준의 자연스러움, 다양한 캐릭터 목소리(예: 주디 홉스 스타일) 커스텀 가능.

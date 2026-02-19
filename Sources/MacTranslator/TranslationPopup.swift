@@ -288,7 +288,6 @@ class PopupActionHandler: NSObject {
     var originalText: String = ""
     var cursorPoint: NSPoint = .zero
     weak var window: NSWindow?
-    let synthesizer = AVSpeechSynthesizer()
 
     @objc func translateText() {
         let text = originalText
@@ -336,19 +335,11 @@ class PopupActionHandler: NSObject {
     }
 
     @objc func speakText() {
-        if synthesizer.isSpeaking {
-            synthesizer.stopSpeaking(at: .immediate)
-            return
-        }
-        let utterance = AVSpeechUtterance(string: originalText)
-        utterance.rate = 0.5 
-        synthesizer.speak(utterance)
+        OpenAITTS.shared.speak(text: originalText)
     }
 
     @objc func closePopup() {
-        if synthesizer.isSpeaking {
-            synthesizer.stopSpeaking(at: .immediate)
-        }
+        OpenAITTS.shared.stop()
         TranslationPopup.dismiss()
     }
 }
