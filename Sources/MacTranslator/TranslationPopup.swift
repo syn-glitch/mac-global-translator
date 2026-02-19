@@ -1,4 +1,5 @@
 import Cocoa
+import AVFoundation
 
 class TranslationPopup {
     private static var currentWindow: NSWindow?
@@ -143,6 +144,15 @@ class TranslationPopup {
         actionCloseButton.action = #selector(PopupActionHandler.closePopup)
         contentView.addSubview(actionCloseButton)
 
+        // Speaker button
+        let speakButton = NSButton(title: "🔊 듣기", target: nil, action: nil)
+        speakButton.bezelStyle = .rounded
+        speakButton.font = NSFont.systemFont(ofSize: 11, weight: .medium)
+        speakButton.translatesAutoresizingMaskIntoConstraints = false
+        speakButton.target = PopupActionHandler.shared
+        speakButton.action = #selector(PopupActionHandler.speakText)
+        contentView.addSubview(speakButton)
+
         // Close button (Top Right "X")
         let closeButton = NSButton(title: "✕", target: nil, action: nil)
         closeButton.bezelStyle = .rounded
@@ -177,8 +187,11 @@ class TranslationPopup {
             copyButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             copyButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12),
 
+            speakButton.centerYAnchor.constraint(equalTo: copyButton.centerYAnchor),
+            speakButton.trailingAnchor.constraint(equalTo: copyButton.leadingAnchor, constant: -8),
+
             actionCloseButton.centerYAnchor.constraint(equalTo: copyButton.centerYAnchor),
-            actionCloseButton.trailingAnchor.constraint(equalTo: copyButton.leadingAnchor, constant: -8),
+            actionCloseButton.trailingAnchor.constraint(equalTo: speakButton.leadingAnchor, constant: -8),
         ])
 
         panel.contentView = contentView
@@ -275,6 +288,7 @@ class PopupActionHandler: NSObject {
     var originalText: String = ""
     var cursorPoint: NSPoint = .zero
     weak var window: NSWindow?
+    let synthesizer = AVSpeechSynthesizer()
 
     @objc func translateText() {
         let text = originalText
@@ -321,7 +335,20 @@ class PopupActionHandler: NSObject {
         }
     }
 
+    @objc func speakText() {
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+            return
+        }
+        let utterance = AVSpeechUtterance(string: originalText)
+        utterance.rate = 0.5 
+        synthesizer.speak(utterance)
+    }
+
     @objc func closePopup() {
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+        }
         TranslationPopup.dismiss()
     }
 }
